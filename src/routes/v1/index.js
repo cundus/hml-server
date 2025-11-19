@@ -7,7 +7,7 @@ const { authenticate } = require("../../middlewares/Auth.middleware");
 
 const routeConfigs = [
   ["auth", "Auth"],
-  ["branch", "Branch"],
+  ["store", "Store"],
   ["user", "User"],
   // ["thirdparty-config", "ThirdPartyConfig"],
   // ["control-report-config", "ControlReportConfig"],

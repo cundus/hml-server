@@ -10,9 +10,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // LOGIN
 exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        const user = await AuthModel.findByUsername(username);
+        const user = await AuthModel.findByEmail(email);
         if (!user) return sendResponse(req, res, "03", { message: "Invalid credentials" });
 
         const match = await bcrypt.compare(password, user.password);
@@ -20,10 +20,10 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign(
             {
-                userId: user.id,
-                username: user.username,
+                user_id: user.id,
+                email: user.email,
                 role: user.role,
-                branchId: user.branchId,
+                store_id: user.store_id,
             },
             JWT_SECRET,
             { expiresIn: "2d" }
@@ -34,9 +34,9 @@ exports.login = async (req, res) => {
             token,
             user: {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 role: user.role,
-                branchId: user.branchId,
+                store_id: user.store_id,
             },
         });
     } catch (err) {
@@ -48,19 +48,20 @@ exports.login = async (req, res) => {
 // REGISTER
 exports.register = async (req, res) => {
     try {
-        const { username, password, role, branchId } = req.body;
+        const { email, name, password, role, store_id, deviceId } = req.body;
 
-        const exist = await AuthModel.findByUsername(username);
-        if (exist) return sendResponse(req, res, "03", { message: "Username already exists" });
+        const exist = await AuthModel.findByEmail(email);
+        if (exist) return sendResponse(req, res, "03", { message: "email already exists" });
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await AuthModel.createUser({
-            username,
+        const newUser = await AuthModel.createUser(
+            email,
+            name,
             hashedPassword,
-            role,
-            branchId,
-        });
+            store_id,
+            deviceId
+        );
 
         if (newUser?.err) throw new Error(newUser.err);
 

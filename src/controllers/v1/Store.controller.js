@@ -1,46 +1,21 @@
 "use strict";
 
-const Product = require("../../models/v1/Product.model");
+const Store = require("../../models/v1/Store.model");
 const sendResponse = require("../../utils/Response");
 
-exports.listProduct = async (req, res) => {
+exports.listStore = async (req, res) => {
     try {
-        const { page, rowPerPage } = req.body;
+        const { Page, RowsPerPage } = req.body;
 
-        const resQry = await Product.list({
-            page, rowPerPage
+        const resQry = await Store.list({
+            Page, RowsPerPage
         });
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry || resQry.length === 0) return sendResponse(req, res, "03");
 
         return sendResponse(req, res, "00", {
-            detaildata: resQry,
-            pagination: { limit, offset }
-        });
-    } catch (err) {
-        console.log(err);
-        return sendResponse(req, res, "99");
-    }
-};
-
-exports.createProduct = async (req, res) => {
-    try {
-        const {
-            ProductId,
-            ReconStatus,
-        } = req.body;
-
-        const resQry = await Product.create(
-            ProductId,
-            ReconStatus,
-        );
-
-        if (resQry?.hasOwnProperty("err")) throw new Error(resQry?.err);
-        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
-
-        return sendResponse(req, res, "00", {
-            detaildata: resQry?.results,
+            detaildata: resQry.results,
             pagination: resQry?.pagination,
         });
     } catch (err) {
@@ -48,47 +23,74 @@ exports.createProduct = async (req, res) => {
         return sendResponse(req, res, "99");
     }
 };
-exports.getOneProduct = async (req, res) => {
+
+exports.createStore = async (req, res) => {
     try {
-        const { ProductId } = req.body
+        const {
+            code, name, address, type,
+        } = req.body;
 
-        const Product = await Product.findById(ProductId);
+        const resQry = await Store.create(
+            code, name, address, type,
+        );
 
-        if (!Product) {
+        if (resQry?.hasOwnProperty("err")) throw new Error(resQry?.err);
+        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
+
+        return sendResponse(req, res, "00", {
+            detaildata: resQry,
+        });
+    } catch (err) {
+        console.log(err);
+        return sendResponse(req, res, "99");
+    }
+};
+exports.getOneStore = async (req, res) => {
+    try {
+        const { id } = req.body
+
+        const store = await Store.findById(id);
+
+        if (!store) {
             return sendResponse(req, res, "03", {
-                message: "Product not found",
+                message: "store not found",
             });
         }
 
-        return sendResponse(req, res, "00", { data: Product });
+        return sendResponse(req, res, "00", {
+            detaildata: resQry,
+        });
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateStore = async (req, res) => {
     try {
-        const { ProductId } = req.body
+        const { id, name, address, type } = req.body
 
-        const updated = await Product.update(ProductId
+        const resQry = await Store.update(id, name, address, type
         );
 
-        return sendResponse(req, res, "00", { data: updated });
+        return sendResponse(req, res, "00", {
+            detaildata: resQry,
+        });
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.removeProduct = async (req, res) => {
+exports.removeStore = async (req, res) => {
     try {
-        const { ProductId } = req.body
+        const { id } = req.body
 
-        await Product.remove(ProductId);
+        await Store.remove(id);
 
         return sendResponse(req, res, "00", {
-            message: "Product deleted successfully",
+            detaildata: resQry,
+            message: "store deleted successfully",
         });
     } catch (err) {
         console.error(err);

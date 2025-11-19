@@ -26,7 +26,7 @@ async function authenticate(req, res, next) {
 
         // Check user existence + status (fresh from DB)
         const dbUser = await DatabaseHandler("users")
-            .where({ userId: payload.userId })
+            .where({ user_id: payload.user_id })
             .first();
 
         if (!dbUser) {

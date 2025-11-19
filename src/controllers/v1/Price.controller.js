@@ -1,6 +1,6 @@
 "use strict";
 
-const Prices = require("../../models/v1/Price.model");
+const Prices = require("../../models/v1/ProductPrice.model");
 const sendResponse = require("../../utils/Response");
 
 exports.listPrice = async (req, res) => {

@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-exports.branchSchema = Joi.object({
+exports.storeSchema = Joi.object({
   // ProductId: Joi.string().required(),
   // ReconcileStatus: Joi.string().required(),
   // ReconciliationType: Joi.string().allow(""),
