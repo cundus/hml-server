@@ -11,21 +11,21 @@ function dbConn() {
         port: config.db.port,
         user: config.db.user,
         password: config.db.password,
-        database: "ReconciliationConfig",
+        database: "public",
     });
 }
 
 // ===============================
-// FIND USER BY USERNAME
+// FIND USER BY Email
 // ===============================
-exports.findByUsername = async (username) => {
+exports.findByEmail = async (email) => {
     try {
         const db = dbConn();
 
         const resQry = await db.execRaw(`
       SELECT TOP 1 *
-      FROM Users WITH(NOLOCK)
-      WHERE username = '${username}'
+      FROM user WITH(NOLOCK)
+      WHERE email = '${email}'
     `);
 
         return resQry[0] || null;
@@ -38,20 +38,46 @@ exports.findByUsername = async (username) => {
 // ===============================
 // CREATE USER
 // ===============================
-exports.createUser = async ({ username, hashedPassword, role, branchId }) => {
+
+exports.createUser = async (name, email, password, store_id, deviceId) => {
     try {
         const db = dbConn();
+        const id = crypto.randomUUID();
+
+        const checkuuid = await db.execRaw(`
+      SELECT *
+      FROM user WITH(NOLOCK)
+      WHERE id = '${id}'
+    `);
+
+        if (checkuuid.length > 0) {
+            return {
+                results: [],
+            }
+        }
+
+        const check = await db.execRaw(`
+      SELECT *
+      FROM user WITH(NOLOCK)
+      WHERE email = '${email}'
+    `);
+
+        if (check.length > 0) {
+            return {
+                results: [],
+            }
+        }
 
         const resQry = await db.execRaw(`
-      INSERT INTO Users (username, password, role, branchId, createdAt, updatedAt)
+      INSERT INTO user (id, name, email, password, store_id, deviceId)
       OUTPUT inserted.*
       VALUES (
-        '${username}',
-        '${hashedPassword}',
-        '${role}',
-        ${branchId ? `'${branchId}'` : "NULL"},
-        GETDATE(),
-        GETDATE()
+        '${id}',
+        '${name}', 
+        '${email}', 
+        '${password}', 
+        ${store_id ? `'${store_id}'` : "NULL"},
+        ${deviceId ? `'${deviceId}'` : "NULL"}
       )
     `);
 

@@ -1,14 +1,14 @@
 function requireRole(requiredRoles = []) {
     return (req, res, next) => {
-        const roleId = req.user && req.user.roleId;
+        const role_id = req.user && req.user.role_id;
         // If you want role name check, join roles table earlier and put roleName in req.user
         // For simplicity, you can fetch role name here (or require middleware that sets req.user.roleName)
-        // Example: expecting roleId(s) passed as UUID(s)
-        // This example assumes that roleId is matched externally; often you'll map ID->name.
+        // Example: expecting role_id(s) passed as UUID(s)
+        // This example assumes that role_id is matched externally; often you'll map ID->name.
         // For demo, skip DB lookup and assume front-end or JWT contains roleName.
         if (!req.user) return res.status(403).json({ message: 'Not authorized' });
         // If requiredRoles is empty => allow all authenticated
-        // For real usage, map roleId->roleName and check
+        // For real usage, map role_id->roleName and check
         return next();
     };
 }

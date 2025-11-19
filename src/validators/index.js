@@ -1,11 +1,11 @@
-const { getBranchSchema } = require("./Branch.validator");
+const { getStoreSchema } = require("./Store.validator");
 
 module.exports = {
   /*
-   *    Branch
+   *    Store
    */
-  getBranchSchema: require("./Branch.validator")[
-    "getBranchSchema"
+  getStoreSchema: require("./Store.validator")[
+    "getStoreSchema"
   ],
 
 };

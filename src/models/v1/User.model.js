@@ -11,97 +11,94 @@ function dbConn() {
         port: config.db.port,
         user: config.db.user,
         password: config.db.password,
-        database: "ReconciliationConfig",
+        database: "public",
     });
 }
 
 // ==============================
-// LIST USERS
+// LIST user
 // ==============================
-exports.list = async ({ limit, offset }) => {
+exports.list = async (Page, RowsPerPage) => {
     try {
         const db = dbConn();
+
+        if (Page != 0) {
+            var offset = (Page - 1) * RowsPerPage;
+        }
 
         const resQry = await db.execRaw(`
       SELECT *
-      FROM Users WITH(NOLOCK)
-      ORDER BY createdAt DESC
-      OFFSET ${offset} ROWS FETCH NEXT ${limit} ROWS ONLY
+      FROM user WITH(NOLOCK)
+      ORDER BY created_at DESC
+      ${Page != 0
+                ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY`
+                : ""
+            }
     `);
 
-        return resQry;
+        const total = await db.execRaw(`
+      SELECT COUNT(1) AS Total
+      FROM user WITH(NOLOCK)
+        `);
+
+        return {
+            results: resQry,
+            pagination: {
+                TotalData: total["Total"],
+                TotalPage: Math.ceil(parseInt(total["Total"]) / limit),
+                TotalPerPage: limit,
+            },
+        }
     } catch (err) {
         console.log(err.message);
         return { err };
     }
 };
 
-// ==============================
-// CREATE USER
-// ==============================
-exports.create = async ({ username, password, role, branchId }) => {
-    try {
-        const db = dbConn();
+// // ==============================
+// // GET ONE USER
+// // ==============================
+// exports.findById = async (id) => {
+//     try {
+//         const db = dbConn();
 
-        const resQry = await db.execRaw(`
-      INSERT INTO Users (username, password, role, branchId, createdAt, updatedAt)
-      OUTPUT inserted.*
-      VALUES (
-        '${username}', 
-        '${password}', 
-        '${role}', 
-        ${branchId ? `'${branchId}'` : "NULL"},
-        '${getDateNow()}',
-        '${getDateNow()}'
-      )
-    `);
+//         const resQry = await db.execRaw(`
+//       SELECT *
+//       FROM user WITH(NOLOCK)
+//       WHERE id = '${id}'
+//     `);
 
-        return resQry;
-    } catch (err) {
-        console.log(err.message);
-        return { err };
-    }
-};
-
-// ==============================
-// GET ONE USER
-// ==============================
-exports.findById = async (id) => {
-    try {
-        const db = dbConn();
-
-        const resQry = await db.execRaw(`
-      SELECT *
-      FROM Users WITH(NOLOCK)
-      WHERE id = '${id}'
-    `);
-
-        return resQry[0] || null;
-    } catch (err) {
-        console.log(err.message);
-        return { err };
-    }
-};
+//         return resQry[0] || null;
+//     } catch (err) {
+//         console.log(err.message);
+//         return { err };
+//     }
+// };
 
 // ==============================
 // UPDATE USER
 // ==============================
-exports.update = async (id, payload) => {
+exports.update = async (name, email, password, store_id, deviceId) => {
     try {
         const db = dbConn();
 
-        const setClause = Object.keys(payload)
-            .map((key) => `${key} = '${payload[key]}'`)
-            .join(", ");
+        let setClause = ""
+        if (name) setClause += `name = '${name}',`
+        if (email) setClause += `email = '${email}',`
+        if (password) setClause += `password = '${password}',`
+        if (store_id) setClause += `store_id = '${store_id}',`
+        if (deviceId) setClause += `deviceId = '${deviceId}',`
 
         const resQry = await db.execRaw(`
-      UPDATE Users
-      SET ${setClause}, updatedAt = '${getDateNow()}'
+      UPDATE user
+      SET ${setClause}, updated_at = '${getDateNow()}'
       OUTPUT inserted.*
-      WHERE id = '${id}'
+      WHERE email = '${email}'
     `);
 
-        return resQry;
+        return {
+            results: resQry
+        };
     } catch (err) {
         console.log(err.message);
         return { err };
@@ -111,35 +108,40 @@ exports.update = async (id, payload) => {
 // ==============================
 // DELETE USER
 // ==============================
-exports.remove = async (id) => {
+exports.remove = async (email) => {
     try {
         const db = dbConn();
 
         const resQry = await db.execRaw(`
-      DELETE FROM Users WHERE id = '${id}'
+      DELETE FROM user WHERE email = '${email}'
     `);
 
-        return resQry;
+        return {
+            results: resQry
+        };
     } catch (err) {
         console.log(err.message);
         return { err };
     }
 };
 
-// ==============================
-// FIND BY USERNAME (for login)
-// ==============================
-exports.findByUsername = async (username) => {
-    try {
-        const db = dbConn();
-        const resQry = await db.execRaw(`
-      SELECT * FROM Users WITH(NOLOCK)
-      WHERE username = '${username}'
-    `);
+// // ==============================
+// // FIND BY USERNAME (for login)
+// // ==============================
+// exports.findByUsername = async (username) => {
+//     try {
+//         const db = dbConn();
 
-        return resQry[0] || null;
-    } catch (err) {
-        console.log(err.message);
-        return { err };
-    }
-};
+//         const request = db.request();
+//         request.input("username", username);
+
+//         const resQry = await request.query(`
+//             SELECT * FROM user WITH(NOLOCK)
+//             WHERE username = @username
+//         `);
+
+//         return { results: resQry };
+//     } catch (err) {
+//         return { err };
+//     }
+// }

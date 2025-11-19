@@ -1,14 +1,15 @@
 "use strict";
 
-const Prices = require("../../models/v1/ProductPrice.model");
+const Role = require("../../models/v1/Role.model");
 const sendResponse = require("../../utils/Response");
 
-exports.listPrice = async (req, res) => {
+// LIST ROLE
+exports.listRole = async (req, res) => {
     try {
-        const { page, rowPerPage } = req.body;
+        const { Page, RowsPerPage } = req.body;
 
-        const resQry = await Prices.list({
-            page, rowPerPage
+        const resQry = await Role.list({
+            Page, RowsPerPage
         });
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -16,80 +17,84 @@ exports.listPrice = async (req, res) => {
 
         return sendResponse(req, res, "00", {
             detaildata: resQry,
-            pagination: { limit, offset }
+            pagination: resQry?.pagination,
         });
+
     } catch (err) {
         console.log(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.createPrice = async (req, res) => {
+// CREATE ROLE
+exports.createRole = async (req, res) => {
     try {
-        const {
-            ProductId,
-            ReconStatus,
-        } = req.body;
+        const { name, description, device_id } = req.body;
 
-        const resQry = await Prices.create(
-            ProductId,
-            ReconStatus,
-        );
+        const resQry = await Role.create(name, description, device_id);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry?.err);
-        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
+        if (resQry?.results?.length === 0) return sendResponse(req, res, "03");
 
         return sendResponse(req, res, "00", {
             detaildata: resQry?.results,
-            pagination: resQry?.pagination,
         });
+
     } catch (err) {
         console.log(err);
         return sendResponse(req, res, "99");
     }
 };
-exports.getOnePrice = async (req, res) => {
+
+// GET ONE ROLE
+exports.getOneRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const { id } = req.body;
 
-        const Price = await Prices.findById(PriceId);
+        const roleData = await Role.findById(id);
 
-        if (!Price) {
+        if (!roleData) {
             return sendResponse(req, res, "03", {
-                message: "Price not found",
+                message: "Role not found",
             });
         }
 
-        return sendResponse(req, res, "00", { data: Price });
+        return sendResponse(req, res, "00", { data: roleData });
+
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.updatePrice = async (req, res) => {
+// UPDATE ROLE
+exports.updateRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const { id, name, description, device_id } = req.body;
 
-        const updated = await Prices.update(PriceId
-        );
+        const updated = await Role.update(id, name, description, device_id);
+
+        if (updated?.err) throw new Error(updated.err);
 
         return sendResponse(req, res, "00", { data: updated });
+
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.removePrice = async (req, res) => {
+// DELETE ROLE
+exports.removeRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const { id } = req.body;
 
-        await Prices.remove(PriceId);
+        await Role.remove(id);
 
         return sendResponse(req, res, "00", {
-            message: "Price deleted successfully",
+            message: "Role deleted successfully",
         });
+
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");

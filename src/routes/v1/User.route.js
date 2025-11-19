@@ -8,11 +8,8 @@ const UserCtrl = require("../../controllers/v1/User.controller.js");
 router.post(
     "/",
     // Validator("getInquiryStatusReconSchema"),
-
     UserCtrl.listUsers
 );
-router.post("/create", UserCtrl.createUser);
-router.post("/findone", UserCtrl.getUser);
 router.post("/update", UserCtrl.updateUser);
 router.post("/delete", UserCtrl.deleteUser);
 

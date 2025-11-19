@@ -3,7 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const Validator = require("../../middlewares/Validator.js");
-const Product = require("../../controllers/v1/Product.controller.js");
+const Product = require("../../controllers/v1/ProductPrice.controller.js");
 
 
 

@@ -17,9 +17,9 @@ function dbConn() {
 }
 
 /**
- * LIST PRODUCT
+ * LIST PRODUCT PRICE
  */
-exports.list = async (Page, RowsPerPage) => {
+exports.list = async ({ Page, RowsPerPage }) => {
     try {
         const db = dbConn();
         let offset = 0;
@@ -28,14 +28,14 @@ exports.list = async (Page, RowsPerPage) => {
 
         const data = await db.execRaw(`
             SELECT *
-            FROM product WITH(NOLOCK)
-            ORDER BY created_at DESC
+            FROM product_price WITH(NOLOCK)
+            ORDER BY createdAt DESC
             ${Page != 0 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY` : ""}
         `);
 
         const total = await db.execRaw(`
             SELECT COUNT(1) AS Total
-            FROM product WITH(NOLOCK)
+            FROM product_price WITH(NOLOCK)
         `);
 
         return {
@@ -52,14 +52,18 @@ exports.list = async (Page, RowsPerPage) => {
     }
 };
 
-exports.create = async (sku, name, description, unit, cost, category_id) => {
+
+/**
+ * CREATE PRODUCT PRICE
+ */
+exports.create = async (product_id, store_id, price, start_date, end_date) => {
     try {
         const db = dbConn();
         const id = crypto.randomUUID();
 
-        // Cek ID random jika bentrok
+        // Pastikan ID unik
         const exists = await db.execRaw(`
-            SELECT id FROM product WHERE id = '${id}'
+            SELECT id FROM product_price WHERE id = '${id}'
         `);
 
         if (exists.length > 0) {
@@ -69,12 +73,11 @@ exports.create = async (sku, name, description, unit, cost, category_id) => {
         let columns = ["id"];
         let values = [`'${id}'`];
 
-        if (sku) { columns.push("sku"); values.push(`'${sku}'`); }
-        if (name) { columns.push("name"); values.push(`'${name}'`); }
-        if (description) { columns.push("description"); values.push(`'${description}'`); }
-        if (unit) { columns.push("unit"); values.push(`'${unit}'`); }
-        if (cost !== undefined) { columns.push("cost"); values.push(`${cost}`); }
-        if (category_id) { columns.push("category_id"); values.push(`'${category_id}'`); }
+        if (product_id) { columns.push("product_id"); values.push(`'${product_id}'`); }
+        if (store_id) { columns.push("store_id"); values.push(`'${store_id}'`); }
+        if (price !== undefined) { columns.push("price"); values.push(`${price}`); }
+        if (start_date) { columns.push("start_date"); values.push(`'${start_date}'`); }
+        if (end_date) { columns.push("end_date"); values.push(`'${end_date}'`); }
 
         columns.push("createdAt");
         values.push("GETDATE()");
@@ -83,7 +86,7 @@ exports.create = async (sku, name, description, unit, cost, category_id) => {
         values.push("GETDATE()");
 
         const resQry = await db.execRaw(`
-            INSERT INTO product (${columns.join(", ")})
+            INSERT INTO product_price (${columns.join(", ")})
             OUTPUT inserted.*
             VALUES (${values.join(", ")})
         `);
@@ -97,7 +100,7 @@ exports.create = async (sku, name, description, unit, cost, category_id) => {
 
 
 /**
- * FIND BY ID
+ * FIND PRODUCT PRICE BY ID
  */
 exports.findById = async (id) => {
     try {
@@ -105,7 +108,7 @@ exports.findById = async (id) => {
 
         const result = await db.execRaw(`
             SELECT *
-            FROM product WITH(NOLOCK)
+            FROM product_price WITH(NOLOCK)
             WHERE id = '${id}'
         `);
 
@@ -116,31 +119,29 @@ exports.findById = async (id) => {
     }
 };
 
+
 /**
- * UPDATE PRODUCT
+ * UPDATE PRODUCT PRICE
  */
-
-
-exports.update = async (id, sku, name, description, unit, cost, category_id) => {
+exports.update = async (id, product_id, store_id, price, start_date, end_date) => {
     try {
         const db = dbConn();
 
         let sets = [];
 
-        if (sku) { sets.push(`sku = '${sku}'`); }
-        if (name) { sets.push(`name = '${name}'`); }
-        if (description) { sets.push(`description = '${description}'`); }
-        if (unit) { sets.push(`unit = '${unit}'`); }
-        if (cost !== undefined) { sets.push(`cost = ${cost}`); }
-        if (category_id) { sets.push(`category_id = '${category_id}'`); }
+        if (product_id) { sets.push(`product_id = '${product_id}'`); }
+        if (store_id) { sets.push(`store_id = '${store_id}'`); }
+        if (price !== undefined) { sets.push(`price = ${price}`); }
+        if (start_date) { sets.push(`start_date = '${start_date}'`); }
+        if (end_date) { sets.push(`end_date = '${end_date}'`); }
 
-        sets.push("updatedAt = GETDATE()");
+        sets.push(`updatedAt = GETDATE()`);
 
         const resQry = await db.execRaw(`
-            UPDATE product
+            UPDATE product_price
             SET ${sets.join(", ")}
             OUTPUT inserted.*
-            WHERE id = '${id}' AND deletedAt IS NULL
+            WHERE id = '${id}'
         `);
 
         return resQry;
@@ -152,14 +153,14 @@ exports.update = async (id, sku, name, description, unit, cost, category_id) => 
 
 
 /**
- * DELETE PRODUCT (Hard Delete)
+ * DELETE PRODUCT PRICE
  */
 exports.remove = async (id) => {
     try {
         const db = dbConn();
 
         const resQry = await db.execRaw(`
-            DELETE FROM product
+            DELETE FROM product_price
             WHERE id = '${id}'
         `);
 

@@ -1,14 +1,14 @@
 "use strict";
 
-const Prices = require("../../models/v1/ProductPrice.model");
+const UserRole = require("../../models/v1/UserRole.model");
 const sendResponse = require("../../utils/Response");
 
-exports.listPrice = async (req, res) => {
+exports.listUserRole = async (req, res) => {
     try {
-        const { page, rowPerPage } = req.body;
+        const { Page, RowsPerPage } = req.body;
 
-        const resQry = await Prices.list({
-            page, rowPerPage
+        const resQry = await UserRole.list({
+            Page, RowsPerPage
         });
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -16,31 +16,6 @@ exports.listPrice = async (req, res) => {
 
         return sendResponse(req, res, "00", {
             detaildata: resQry,
-            pagination: { limit, offset }
-        });
-    } catch (err) {
-        console.log(err);
-        return sendResponse(req, res, "99");
-    }
-};
-
-exports.createPrice = async (req, res) => {
-    try {
-        const {
-            ProductId,
-            ReconStatus,
-        } = req.body;
-
-        const resQry = await Prices.create(
-            ProductId,
-            ReconStatus,
-        );
-
-        if (resQry?.hasOwnProperty("err")) throw new Error(resQry?.err);
-        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
-
-        return sendResponse(req, res, "00", {
-            detaildata: resQry?.results,
             pagination: resQry?.pagination,
         });
     } catch (err) {
@@ -48,30 +23,52 @@ exports.createPrice = async (req, res) => {
         return sendResponse(req, res, "99");
     }
 };
-exports.getOnePrice = async (req, res) => {
+
+exports.createUserRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const {
+            user_id, role_id, device_id,
+        } = req.body;
 
-        const Price = await Prices.findById(PriceId);
+        const resQry = await UserRole.create(
+            user_id, role_id, device_id,
+        );
 
-        if (!Price) {
+        if (resQry?.hasOwnProperty("err")) throw new Error(resQry?.err);
+        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
+
+        return sendResponse(req, res, "00", {
+            detaildata: resQry?.results,
+        });
+    } catch (err) {
+        console.log(err);
+        return sendResponse(req, res, "99");
+    }
+};
+exports.getOneUserRole = async (req, res) => {
+    try {
+        const { id } = req.body
+
+        const UserRole = await UserRole.findById(id);
+
+        if (!UserRole) {
             return sendResponse(req, res, "03", {
-                message: "Price not found",
+                message: "UserRole not found",
             });
         }
 
-        return sendResponse(req, res, "00", { data: Price });
+        return sendResponse(req, res, "00", { data: UserRole });
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-exports.updatePrice = async (req, res) => {
+exports.updateUserRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const { id, user_id, role_id, device_id } = req.body
 
-        const updated = await Prices.update(PriceId
+        const updated = await UserRole.update(id, user_id, role_id, device_id
         );
 
         return sendResponse(req, res, "00", { data: updated });
@@ -81,14 +78,14 @@ exports.updatePrice = async (req, res) => {
     }
 };
 
-exports.removePrice = async (req, res) => {
+exports.removeUserRole = async (req, res) => {
     try {
-        const { PriceId } = req.body
+        const { id } = req.body
 
-        await Prices.remove(PriceId);
+        await UserRole.remove(id);
 
         return sendResponse(req, res, "00", {
-            message: "Price deleted successfully",
+            message: "UserRole deleted successfully",
         });
     } catch (err) {
         console.error(err);

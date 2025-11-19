@@ -5,55 +5,50 @@ const sendResponse = require("../../utils/Response");
 
 exports.listUsers = async (req, res) => {
     try {
-        const { page, rowPerPage } = req.query;
+        const { Page, RowsPerPage } = req.query;
 
-        const rows = await Users.list(page, rowPerPage);
-        if (rows?.err) throw new Error(rows.err);
+        const resQry = await Users.list(Page, RowsPerPage);
+        if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
+        if (!resQry || resQry.length === 0) return sendResponse(req, res, "03");
 
-        return sendResponse(req, res, "00", { data: rows });
+        return sendResponse(req, res, "00", {
+            detaildata: resQry.results,
+            pagination: resQry?.pagination,
+        });
     } catch (err) {
         console.log(err);
         return sendResponse(req, res, "99");
     }
 };
 
-// CREATE USER
-exports.createUser = async (req, res) => {
-    try {
-        const { username, password, role, branchId } = req.body;
+// // CREATE USER
+// exports.createUser = async (req, res) => {
+//     try {
+//         const { name, email, password, store_id, deviceId } = req.body;
 
-        const newUser = await Users.create({ username, password, role, branchId });
-        if (newUser?.err) throw new Error(newUser.err);
+//         const newUser = await Users.create(name, email, password, store_id, deviceId);
+//         if (newUser?.err) throw new Error(newUser.err);
 
-        return sendResponse(req, res, "00", { data: newUser });
-    } catch (err) {
-        console.log(err);
-        return sendResponse(req, res, "99");
-    }
-};
+//         return sendResponse(req, res, "00", { data: newUser });
+//     } catch (err) {
+//         console.log(err);
+//         return sendResponse(req, res, "99");
+//     }
+// };
 
-// GET ONE USER
-exports.getUser = async (req, res) => {
-    try {
-        const { id } = req.body
-        const user = await Users.findById(id);
-        if (!user) return sendResponse(req, res, "03", { message: "User not found" });
-
-        return sendResponse(req, res, "00", { data: user });
-    } catch (err) {
-        console.log(err);
-        return sendResponse(req, res, "99");
-    }
-};
 
 // UPDATE USER
 exports.updateUser = async (req, res) => {
     try {
-        const { username, password, role, branchId } = req.body;
-        const updated = await Users.update(username, password, role, branchId);
-        if (updated?.err) throw new Error(updated.err);
+        const { name, email, password, store_id, deviceId } = req.body;
+        const resQry = await Users.update(name, email, password, store_id, deviceId);
 
-        return sendResponse(req, res, "00", { data: updated });
+        if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
+        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
+
+        return sendResponse(req, res, "00", {
+            detaildata: resQry,
+        });
     } catch (err) {
         console.log(err);
         return sendResponse(req, res, "99");
@@ -63,8 +58,8 @@ exports.updateUser = async (req, res) => {
 // DELETE USER
 exports.deleteUser = async (req, res) => {
     try {
-        const { userId } = req.body
-        await Users.remove(userId);
+        const { email } = req.body
+        await Users.remove(email);
 
         return sendResponse(req, res, "00", { message: "Deleted success" });
     } catch (err) {
