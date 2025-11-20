@@ -1,34 +1,31 @@
 "use strict";
 
-const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
 
-function dbConn() {
-    return new DatabaseHandler({
-        host: config.db.host,
-        client: config.db.client,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: "public",
-    });
-}
+
 
 // ==============================
 // LIST user
 // ==============================
 exports.list = async (Page, RowsPerPage) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         if (Page != 0) {
             var offset = (Page - 1) * RowsPerPage;
         }
 
         const resQry = await db.execRaw(`
       SELECT *
-      FROM user WITH(NOLOCK)
+       FROM  user  
       ORDER BY created_at DESC
       ${Page != 0
                 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY`
@@ -36,17 +33,17 @@ exports.list = async (Page, RowsPerPage) => {
             }
     `);
 
-        const total = await db.execRaw(`
+        const [total] = await db.execRaw(`
       SELECT COUNT(1) AS Total
-      FROM user WITH(NOLOCK)
+       FROM  user  
         `);
 
         return {
             results: resQry,
             pagination: {
-                TotalData: total["Total"],
-                TotalPage: Math.ceil(parseInt(total["Total"]) / limit),
-                TotalPerPage: limit,
+                TotalData: parseInt(total.total),
+                TotalPage: Math.ceil(parseInt(total.total) / RowsPerPage),
+                TotalPerPage: RowsPerPage,
             },
         }
     } catch (err) {
@@ -55,33 +52,16 @@ exports.list = async (Page, RowsPerPage) => {
     }
 };
 
-// // ==============================
-// // GET ONE USER
-// // ==============================
-// exports.findById = async (id) => {
-//     try {
-//         const db = dbConn();
-
-//         const resQry = await db.execRaw(`
-//       SELECT *
-//       FROM user WITH(NOLOCK)
-//       WHERE id = '${id}'
-//     `);
-
-//         return resQry[0] || null;
-//     } catch (err) {
-//         console.log(err.message);
-//         return { err };
-//     }
-// };
-
-// ==============================
-// UPDATE USER
-// ==============================
 exports.update = async (name, email, password, store_id, deviceId) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let setClause = ""
         if (name) setClause += `name = '${name}',`
         if (email) setClause += `email = '${email}',`
@@ -110,10 +90,16 @@ exports.update = async (name, email, password, store_id, deviceId) => {
 // ==============================
 exports.remove = async (email) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
-      DELETE FROM user WHERE email = '${email}'
+      DELETE  FROM  user WHERE email = '${email}'
     `);
 
         return {
@@ -124,24 +110,3 @@ exports.remove = async (email) => {
         return { err };
     }
 };
-
-// // ==============================
-// // FIND BY USERNAME (for login)
-// // ==============================
-// exports.findByUsername = async (username) => {
-//     try {
-//         const db = dbConn();
-
-//         const request = db.request();
-//         request.input("username", username);
-
-//         const resQry = await request.query(`
-//             SELECT * FROM user WITH(NOLOCK)
-//             WHERE username = @username
-//         `);
-
-//         return { results: resQry };
-//     } catch (err) {
-//         return { err };
-//     }
-// }

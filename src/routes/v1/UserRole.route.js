@@ -6,18 +6,18 @@ const Validator = require("../../middlewares/Validator.js");
 const UserRole = require("../../controllers/v1/UserRole.controller.js");
 
 // List UserRole
-router.post("/", UserRole.listUserRole);
+router.get("/", UserRole.listUserRole);
 
 // Create UserRole
-router.post("/create", UserRole.createUserRole);
+router.get("/", UserRole.createUserRole);
 
-// Find one UserRole
-router.post("/findone", UserRole.getOneUserRole);
+// Find one UserRole by ID
+router.get("/:id", UserRole.getOneUserRole);
 
-// Update UserRole
-router.post("/update", UserRole.updateUserRole);
+// Update UserRole by ID
+router.put("/:id", UserRole.updateUserRole);
 
-// Delete UserRole
-router.post("/delete", UserRole.removeUserRole);
+// Delete UserRole by ID
+router.delete("/:id", UserRole.removeUserRole);
 
 module.exports = router;

@@ -3,15 +3,15 @@
 const express = require("express");
 const router = express.Router();
 const Validator = require("../../middlewares/Validator.js");
-const Product = require("../../controllers/v1/ProductPrice.controller.js");
+const Product = require("../../controllers/v1/Product.controller.js");
 
 
 
-router.post("/", Product.listProduct);
+router.get("/", Product.listProduct);
 router.post("/create", Product.createProduct);
-router.post("/findone", Product.getOneProduct);
-router.post("/update", Product.updateProduct);
-router.post("/delete", Product.removeProduct);
+router.get("/:id", Product.getOneProduct);
+router.put("/:id", Product.updateProduct);
+router.delete("/:id", Product.removeProduct);
 
 module.exports = router;
 

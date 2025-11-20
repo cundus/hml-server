@@ -24,7 +24,7 @@ async function authenticate(req, res, next) {
         const payload = jwt.verify(token, JWT_SECRET);
         req.user = payload;
 
-        // Check user existence + status (fresh from DB)
+        // Check user existence + status (fresh  FROM  DB)
         const dbUser = await DatabaseHandler("users")
             .where({ user_id: payload.user_id })
             .first();

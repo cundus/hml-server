@@ -68,12 +68,12 @@ const formatDate = (data, type) => {
   }
 };
 
-const pagination = (Page = 1, TotalData, Limit = 100) => {
+const pagination = (Page = 1, TotalData, RowsPerPage = 100) => {
   let result = {
     Page: Page,
     TotalData: parseInt(TotalData),
-    TotalPage: Math.ceil(TotalData / Limit),
-    TotalPerPage: parseInt(Limit),
+    TotalPage: Math.ceil(TotalData / RowsPerPage),
+    TotalPerPage: parseInt(RowsPerPage),
   };
 
   return result;

@@ -3,9 +3,12 @@
 const Users = require("../../models/v1/User.model");
 const sendResponse = require("../../utils/Response");
 
+/**
+ * LIST USERS
+ */
 exports.listUsers = async (req, res) => {
     try {
-        const { Page, RowsPerPage } = req.query;
+        const { Page, RowsPerPage } = req.body;
 
         const resQry = await Users.list(Page, RowsPerPage);
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -16,54 +19,45 @@ exports.listUsers = async (req, res) => {
             pagination: resQry?.pagination,
         });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-// // CREATE USER
-// exports.createUser = async (req, res) => {
-//     try {
-//         const { name, email, password, store_id, deviceId } = req.body;
-
-//         const newUser = await Users.create(name, email, password, store_id, deviceId);
-//         if (newUser?.err) throw new Error(newUser.err);
-
-//         return sendResponse(req, res, "00", { data: newUser });
-//     } catch (err) {
-//         console.log(err);
-//         return sendResponse(req, res, "99");
-//     }
-// };
-
-
-// UPDATE USER
+/**
+ * UPDATE USER
+ */
 exports.updateUser = async (req, res) => {
     try {
+        const { id } = req.params; // bisa pakai email juga jika id tidak ada
         const { name, email, password, store_id, deviceId } = req.body;
-        const resQry = await Users.update(name, email, password, store_id, deviceId);
+
+        const resQry = await Users.update(id, name, email, password, store_id, deviceId);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
-        if (resQry?.results.length == 0) return sendResponse(req, res, "03");
+        if (!resQry?.results || resQry.results.length === 0) return sendResponse(req, res, "03");
 
-        return sendResponse(req, res, "00", {
-            detaildata: resQry,
-        });
+        return sendResponse(req, res, "00", { detaildata: resQry });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return sendResponse(req, res, "99");
     }
 };
 
-// DELETE USER
+/**
+ * DELETE USER
+ */
 exports.deleteUser = async (req, res) => {
     try {
-        const { email } = req.body
-        await Users.remove(email);
+        const { id } = req.params; // gunakan path param agar RESTful
+        const removed = await Users.remove(id);
 
-        return sendResponse(req, res, "00", { message: "Deleted success" });
+        return sendResponse(req, res, "00", {
+            detaildata: removed,
+            message: "User deleted successfully",
+        });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return sendResponse(req, res, "99");
     }
 };

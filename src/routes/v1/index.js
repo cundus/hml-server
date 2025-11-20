@@ -1,30 +1,38 @@
 const express = require("express");
-const config = require("../../config/config");
 
 const router = express.Router();
 const { authenticate } = require("../../middlewares/Auth.middleware");
+const config = require("../../config/config");
 
 
 const routeConfigs = [
   ["auth", "Auth"],
   ["store", "Store"],
   ["user", "User"],
-  // ["thirdparty-config", "ThirdPartyConfig"],
-  // ["control-report-config", "ControlReportConfig"],
-  // ["time-config", "TimeConfig"],
-  // ["resolution-config", "ResolutionConfig"],
-  // ["settlement-config", "SettlementConfig"],
-  // ["monitoring-job", "MonitoringJob"],
-  // ["recon-report", "ReconReport"],
-  // ["resolution", "Resolution"],
-  // ["inquiry/status-recon", "InquiryStatusRecon"],
-  // ["minio-report", "Minio"],
-  // ["report-config", "ReportConfig"],
-  // ["ref-dropdown", "RefDropdown"],
-  // ["resolution-automation", "ResolutionAutomation"],
-  // ["sla-report", "SlaReport"],
-  // ["queue-export", "QueueExport"],
+  ["audit_log", "AuditLog"],
+  ["batch", "Batch"],
+  ["category", "Category"],
+  ["customer", "Customer"],
+  ["customer_category", "CustomerCategory"],
+  ["permission", "Permission"],
+  ["product", "Product"],
+  ["product_location", "ProductLocation"],
+  ["product_price", "ProductPrice"],
+  ["purchase_order", "PurchaseOrder"],
+  ["purchase_order_item", "PurchaseOrderItem"],
+  ["role", "Role"],
+  ["role_permission", "RolePermission"],
+  ["stock_adjustment", "StockAdjustment"],
+  ["stock_transaction", "StockTransaction"],
+  ["supplier", "Supplier"],
+  ["transaction_items", "TransactionItems"],
+  ["transactions", "Transactions"],
+  ["transfer_item", "TransferItem"],
+  ["transfer_request", "TransferRequest"],
+  ["user_role", "UserRole"]
+
 ];
+
 
 const routes = routeConfigs.map(([path, fileName]) => ({
   name: path,
@@ -38,7 +46,8 @@ if (config.env === "development") {
       router.use(route.path, route.route);
       return;
     }
-    router.use(route.path, authenticate, route.route);
+    // router.use(route.path, authenticate, route.route);
+    router.use(route.path, route.route);
   });
 } else {
   routes.forEach((route) => {

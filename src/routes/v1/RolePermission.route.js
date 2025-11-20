@@ -6,18 +6,18 @@ const Validator = require("../../middlewares/Validator.js");
 const RolePermission = require("../../controllers/v1/RolePermission.controller.js");
 
 // List RolePermission
-router.post("/", RolePermission.listRolePermission);
+router.get("/", RolePermission.listRolePermission);
 
 // Create RolePermission
 router.post("/create", RolePermission.createRolePermission);
 
 // Find One
-router.post("/findone", RolePermission.getOneRolePermission);
+router.get("/:id", RolePermission.getOneRolePermission);
 
 // Update
-router.post("/update", RolePermission.updateRolePermission);
+router.put("/:id", RolePermission.updateRolePermission);
 
 // Delete
-router.post("/delete", RolePermission.removeRolePermission);
+router.delete("/:id", RolePermission.removeRolePermission);
 
 module.exports = router;

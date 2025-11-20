@@ -7,11 +7,11 @@ const Store = require("../../controllers/v1/Store.controller.js");
 
 
 
-router.post("/", Store.listStore);
+router.get("/", Store.listStore);
 router.post("/create", Store.createStore);
-router.post("/findone", Store.getOneStore);
-router.post("/update", Store.updateStore);
-router.post("/delete", Store.removeStore);
+router.get("/:id", Store.getOneStore);
+router.put("/:id", Store.updateStore);
+router.delete("/:id", Store.removeStore);
 
 module.exports = router;
 

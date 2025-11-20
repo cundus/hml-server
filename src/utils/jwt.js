@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt  FROM  "jsonwebtoken";
 
 export default {
     sign: (data) => jwt.sign(data, process.env.JWT_SECRET, { expiresIn: "1d" }),

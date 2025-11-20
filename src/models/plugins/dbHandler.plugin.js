@@ -11,13 +11,21 @@ class DatabaseHandler {
         password: config.password,
         database: config.database,
         port: config.port,
-        options: {
-          encrypt: false,
-          enableArithAbort: true,
-          trustServerCertificate: true,
-        },
       },
-      pool: { min: 0, max: 10 },
+      pool: {
+        min: 0,
+        max: 20,  // or more, depending on your load
+        acquireTimeoutMillis: 60000,
+        idleTimeoutMillis: 30000,
+        propagateCreateError: false, // optional but helps in some failure cases
+      },
+      postProcessResponse: (result) => {
+        // If it's a raw query result from Postgres, it will be an object
+        if (result && result.rows) {
+          return result.rows;
+        }
+        return result;
+      }
     });
   }
 

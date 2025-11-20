@@ -6,18 +6,18 @@ const Validator = require("../../middlewares/Validator.js");
 const Permission = require("../../controllers/v1/Permission.controller.js");
 
 // List Permission
-router.post("/", Permission.listPermission);
+router.get("/", Permission.listPermission);
 
 // Create Permission
 router.post("/create", Permission.createPermission);
 
 // Find One Permission
-router.post("/findone", Permission.getOnePermission);
+router.get("/:id", Permission.getOnePermission);
 
 // Update Permission
-router.post("/update", Permission.updatePermission);
+router.put("/:id", Permission.updatePermission);
 
 // Delete Permission
-router.post("/delete", Permission.removePermission);
+router.delete("/:id", Permission.removePermission);
 
 module.exports = router;

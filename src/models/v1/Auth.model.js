@@ -3,6 +3,11 @@
 const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 
+console.log("config.db", config.db.host);
+console.log("config.db", config.db.client);
+console.log("config.db", config.db.port);
+console.log("config.db", config.db.password);
+
 // DB connection helper
 function dbConn() {
     return new DatabaseHandler({
@@ -20,15 +25,21 @@ function dbConn() {
 // ===============================
 exports.findByEmail = async (email) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
       SELECT TOP 1 *
-      FROM user WITH(NOLOCK)
+       FROM  user  
       WHERE email = '${email}'
     `);
 
-        return resQry[0] || null;
+        return resQry || null;
     } catch (err) {
         console.log(err.message);
         return { err };
@@ -41,12 +52,19 @@ exports.findByEmail = async (email) => {
 
 exports.createUser = async (name, email, password, store_id, deviceId) => {
     try {
-        const db = dbConn();
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const id = crypto.randomUUID();
 
         const checkuuid = await db.execRaw(`
       SELECT *
-      FROM user WITH(NOLOCK)
+       FROM  user  
       WHERE id = '${id}'
     `);
 
@@ -58,7 +76,7 @@ exports.createUser = async (name, email, password, store_id, deviceId) => {
 
         const check = await db.execRaw(`
       SELECT *
-      FROM user WITH(NOLOCK)
+       FROM  user  
       WHERE email = '${email}'
     `);
 

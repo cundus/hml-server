@@ -1,33 +1,29 @@
 "use strict";
 
-const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
 const crypto = require("crypto");
 
-function dbConn() {
-    return new DatabaseHandler({
-        host: config.db.host,
-        client: config.db.client,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: "public",
-    });
-}
 
-exports.list = async ({ Page, RowsPerPage }) => {
+
+exports.list = async (Page, RowsPerPage) => {
     try {
-        const db = dbConn();
-
-        let offset = 0;
-        if (Page && Page != 0) {
-            offset = (Page - 1) * RowsPerPage;
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
+        if (Page != 0) {
+            var offset = (Page - 1) * RowsPerPage;
         }
 
         const resQry = await db.execRaw(`
             SELECT *
-            FROM permission WITH(NOLOCK)
+             FROM  permission  
             ORDER BY created_at DESC
             ${Page != 0
                 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY`
@@ -35,16 +31,16 @@ exports.list = async ({ Page, RowsPerPage }) => {
             }
         `);
 
-        const total = await db.execRaw(`
+        const [total] = await db.execRaw(`
             SELECT COUNT(1) AS Total
-            FROM permission WITH(NOLOCK)
+             FROM  permission  
         `);
 
         return {
             results: resQry,
             pagination: {
-                TotalData: total["Total"],
-                TotalPage: Math.ceil(parseInt(total["Total"]) / RowsPerPage),
+                TotalData: parseInt(total.total),
+                TotalPage: Math.ceil(parseInt(total.total) / RowsPerPage),
                 TotalPerPage: RowsPerPage,
             },
         };
@@ -57,11 +53,17 @@ exports.list = async ({ Page, RowsPerPage }) => {
 
 exports.create = async (id, name, description, device_id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         // Prevent duplicate ID (very rare but good practice)
         const checkId = await db.execRaw(`
-            SELECT id FROM permission WITH(NOLOCK)
+            SELECT id  FROM  permission  
             WHERE id = '${id}'
         `);
 
@@ -104,15 +106,21 @@ exports.create = async (id, name, description, device_id) => {
 
 exports.findById = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
             SELECT *
-            FROM permission WITH(NOLOCK)
+             FROM  permission  
             WHERE id = '${id}'
         `);
 
-        return resQry[0] || null;
+        return resQry || null;
 
     } catch (err) {
         console.log(err.message);
@@ -122,8 +130,14 @@ exports.findById = async (id) => {
 
 exports.update = async (id, name, description, device_id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let setClause = "";
 
         if (name) setClause += `name = '${name}',`;
@@ -149,10 +163,16 @@ exports.update = async (id, name, description, device_id) => {
 
 exports.remove = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
-            DELETE FROM permission
+            DELETE  FROM  permission
             WHERE id = '${id}'
         `);
 

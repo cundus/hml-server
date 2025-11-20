@@ -6,9 +6,9 @@ try {
   const contentModel = `
     "use strict"
 
-    const config = require("../../config/config");
-    const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
+         const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
     const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
     `;
 
   fs.writeFileSync(`./src/models/v1/${argument[2]}.model.js`, contentModel);
@@ -35,7 +35,7 @@ try {
     const Validator = require("../../middlewares/Validator");
     const ${argument[2]} = require("../../controllers/v1/${argument[2]}.controller");
 
-    router.post("/", ${argument[2]}.someMethod)
+    router.get("/", ${argument[2]}.someMethod)
 
     module.exports = router
   `;

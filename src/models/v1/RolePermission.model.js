@@ -1,41 +1,38 @@
 "use strict";
 
 const crypto = require("crypto");
-const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
 
-function dbConn() {
-    return new DatabaseHandler({
-        host: config.db.host,
-        client: config.db.client,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: "public",
-    });
-}
+
 
 // LIST
-exports.list = async ({ Page, RowsPerPage }) => {
+exports.list = async (Page, RowsPerPage) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let offset = 0;
         if (Page && Page != 0) offset = (Page - 1) * RowsPerPage;
 
         const resQry = await db.execRaw(`
             SELECT *
-            FROM role_permission WITH(NOLOCK)
+             FROM  role_permission  
             ORDER BY created_at DESC
             ${Page != 0
                 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY`
                 : ""}
         `);
 
-        const total = await db.execRaw(`
+        const [total] = await db.execRaw(`
             SELECT COUNT(1) AS Total
-            FROM role_permission WITH(NOLOCK)
+             FROM  role_permission  
         `);
 
         return {
@@ -58,13 +55,20 @@ exports.list = async ({ Page, RowsPerPage }) => {
 // CREATE
 exports.create = async (role_id, permission_id, device_id) => {
     try {
-        const db = dbConn();
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const id = crypto.randomUUID();
 
         // CEK DUPLICATE ID
         const checkId = await db.execRaw(`
             SELECT id
-            FROM role_permission WITH(NOLOCK)
+             FROM  role_permission  
             WHERE id = '${id}'
         `);
 
@@ -108,15 +112,21 @@ exports.create = async (role_id, permission_id, device_id) => {
 // FIND BY ID
 exports.findById = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
             SELECT *
-            FROM role_permission WITH(NOLOCK)
+             FROM  role_permission  
             WHERE id = '${id}'
         `);
 
-        return resQry[0] || null;
+        return resQry || null;
 
     } catch (err) {
         console.log(err.message);
@@ -127,8 +137,14 @@ exports.findById = async (id) => {
 // UPDATE
 exports.update = async (id, role_id, permission_id, device_id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let setClause = "";
 
         if (role_id) setClause += `role_id = '${role_id}',`;
@@ -155,10 +171,16 @@ exports.update = async (id, role_id, permission_id, device_id) => {
 // DELETE
 exports.remove = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
-            DELETE FROM role_permission
+            DELETE  FROM  role_permission
             WHERE id = '${id}'
         `);
 

@@ -1,31 +1,28 @@
 "use strict";
 
-const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
 
-function dbConn() {
-    return new DatabaseHandler({
-        host: config.db.host,
-        client: config.db.client,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: "public",
-    });
-}
+
 
 exports.list = async (Page, RowsPerPage) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         if (Page != 0) {
             var offset = (Page - 1) * RowsPerPage;
         }
 
         const resQry = await db.execRaw(`
       SELECT *
-      FROM user_role WITH(NOLOCK)
+       FROM  user_role  
       ORDER BY created_at DESC
       ${Page != 0
                 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY`
@@ -33,17 +30,17 @@ exports.list = async (Page, RowsPerPage) => {
             }
         `);
 
-        const total = await db.execRaw(`
+        const [total] = await db.execRaw(`
       SELECT COUNT(1) AS Total
-      FROM user_role WITH(NOLOCK)
+       FROM  user_role  
         `);
 
         return {
             results: resQry,
             pagination: {
-                TotalData: total["Total"],
-                TotalPage: Math.ceil(parseInt(total["Total"]) / limit),
-                TotalPerPage: limit,
+                TotalData: parseInt(total.total),
+                TotalPage: Math.ceil(parseInt(total.total) / RowsPerPage),
+                TotalPerPage: RowsPerPage,
             },
         }
     } catch (err) {
@@ -54,12 +51,19 @@ exports.list = async (Page, RowsPerPage) => {
 
 exports.create = async (user_id, role_id, device_id) => {
     try {
-        const db = dbConn();
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const id = crypto.randomUUID();
 
         const checkId = await db.execRaw(`
       SELECT *
-      FROM user_role WITH(NOLOCK)
+       FROM  user_role  
       WHERE id = '${id}'
         `);
 
@@ -102,15 +106,21 @@ exports.create = async (user_id, role_id, device_id) => {
 
 exports.findById = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
     SELECT *
-        FROM user_role WITH(NOLOCK)
+         FROM  user_role  
       WHERE id = '${id}'
         `);
 
-        return resQry[0] || null;
+        return resQry || null;
     } catch (err) {
         console.log(err.message);
         return { err };
@@ -119,8 +129,14 @@ exports.findById = async (id) => {
 
 exports.update = async (id, user_id, role_id, device_id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let setClause = ""
         if (user_id) setClause += `user_id = '${user_id}',`
         if (role_id) setClause += `role_id = '${role_id}',`
@@ -142,10 +158,16 @@ exports.update = async (id, user_id, role_id, device_id) => {
 
 exports.remove = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
-      DELETE FROM user_role
+      DELETE  FROM  user_role
       WHERE id = '${id}'
         `);
 

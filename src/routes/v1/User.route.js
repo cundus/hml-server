@@ -5,13 +5,13 @@ const router = express.Router();
 const Validator = require("../../middlewares/Validator");
 const UserCtrl = require("../../controllers/v1/User.controller.js");
 
-router.post(
+router.get(
     "/",
     // Validator("getInquiryStatusReconSchema"),
     UserCtrl.listUsers
 );
-router.post("/update", UserCtrl.updateUser);
-router.post("/delete", UserCtrl.deleteUser);
+router.put("/:id", UserCtrl.updateUser);
+router.delete("/:id", UserCtrl.deleteUser);
 
 module.exports = router;
 

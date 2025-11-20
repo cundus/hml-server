@@ -1,48 +1,45 @@
 "use strict";
 
 const crypto = require("crypto");
-const config = require("../../config/config");
 const { DatabaseHandler } = require("../plugins/dbHandler.plugin");
 const { getDateNow } = require("../../utils/Helpers");
+const config = require("../../config/config");
 
-function dbConn() {
-    return new DatabaseHandler({
-        host: config.db.host,
-        client: config.db.client,
-        port: config.db.port,
-        user: config.db.user,
-        password: config.db.password,
-        database: "public",
-    });
-}
+
 
 /**
  * LIST PRODUCT PRICE
  */
-exports.list = async ({ Page, RowsPerPage }) => {
+exports.list = async (Page, RowsPerPage) => {
     try {
-        const db = dbConn();
-        let offset = 0;
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        }); let offset = 0;
 
         if (Page != 0) offset = (Page - 1) * RowsPerPage;
 
         const data = await db.execRaw(`
             SELECT *
-            FROM product_price WITH(NOLOCK)
+             FROM  product_price  
             ORDER BY createdAt DESC
             ${Page != 0 ? `OFFSET ${offset} ROWS FETCH NEXT ${RowsPerPage} ROWS ONLY` : ""}
         `);
 
-        const total = await db.execRaw(`
+        const [total] = await db.execRaw(`
             SELECT COUNT(1) AS Total
-            FROM product_price WITH(NOLOCK)
+             FROM  product_price  
         `);
 
         return {
             results: data,
             pagination: {
-                TotalData: total["Total"],
-                TotalPage: Math.ceil(parseInt(total["Total"]) / RowsPerPage),
+                TotalData: parseInt(total.total),
+                TotalPage: Math.ceil(parseInt(total.total) / RowsPerPage),
                 TotalPerPage: RowsPerPage,
             },
         };
@@ -58,12 +55,19 @@ exports.list = async ({ Page, RowsPerPage }) => {
  */
 exports.create = async (product_id, store_id, price, start_date, end_date) => {
     try {
-        const db = dbConn();
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const id = crypto.randomUUID();
 
         // Pastikan ID unik
         const exists = await db.execRaw(`
-            SELECT id FROM product_price WHERE id = '${id}'
+            SELECT id  FROM  product_price WHERE id = '${id}'
         `);
 
         if (exists.length > 0) {
@@ -104,11 +108,17 @@ exports.create = async (product_id, store_id, price, start_date, end_date) => {
  */
 exports.findById = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const result = await db.execRaw(`
             SELECT *
-            FROM product_price WITH(NOLOCK)
+             FROM  product_price  
             WHERE id = '${id}'
         `);
 
@@ -125,8 +135,14 @@ exports.findById = async (id) => {
  */
 exports.update = async (id, product_id, store_id, price, start_date, end_date) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         let sets = [];
 
         if (product_id) { sets.push(`product_id = '${product_id}'`); }
@@ -157,10 +173,16 @@ exports.update = async (id, product_id, store_id, price, start_date, end_date) =
  */
 exports.remove = async (id) => {
     try {
-        const db = dbConn();
-
+        let db = new DatabaseHandler({
+            host: config.db.host,
+            client: config.db.client,
+            port: config.db.port,
+            user: config.db.user,
+            password: config.db.password,
+            database: process.env.FE_DATABASE,
+        });
         const resQry = await db.execRaw(`
-            DELETE FROM product_price
+            DELETE  FROM  product_price
             WHERE id = '${id}'
         `);
 
