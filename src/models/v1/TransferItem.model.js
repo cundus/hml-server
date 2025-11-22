@@ -52,7 +52,7 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE TRANSFER ITEM
  */
-exports.create = async (transfer_request_id, product_id, qty, unit) => {
+exports.create = async (transfer_id, product_id, quantity) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -78,10 +78,9 @@ exports.create = async (transfer_request_id, product_id, qty, unit) => {
         let columns = ['id'];
         let values = [`'${id}'`];
 
-        if (transfer_request_id) { columns.push('transfer_request_id'); values.push(`'${transfer_request_id}'`); }
+        if (transfer_id) { columns.push('transfer_id'); values.push(`'${transfer_id}'`); }
         if (product_id) { columns.push('product_id'); values.push(`'${product_id}'`); }
-        if (qty !== undefined) { columns.push('qty'); values.push(`${qty}`); }
-        if (unit) { columns.push('unit'); values.push(`'${unit}'`); }
+        if (quantity !== undefined) { columns.push('quantity'); values.push(`${quantity}`); }
 
         columns.push('created_at');
         values.push(`'${getDateNow()}'`);
@@ -131,7 +130,7 @@ exports.findById = async (id) => {
 /**
  * UPDATE TRANSFER ITEM
  */
-exports.update = async (id, transfer_request_id, product_id, qty, unit) => {
+exports.update = async (id, transfer_id, product_id, quantity) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -142,10 +141,9 @@ exports.update = async (id, transfer_request_id, product_id, qty, unit) => {
             database: process.env.FE_DATABASE,
         });
         let setClause = '';
-        if (transfer_request_id) setClause += `transfer_request_id = '${transfer_request_id}',`;
+        if (transfer_id) setClause += `transfer_id = '${transfer_id}',`;
         if (product_id) setClause += `product_id = '${product_id}',`;
-        if (qty !== undefined) setClause += `qty = ${qty},`;
-        if (unit) setClause += `unit = '${unit}',`;
+        if (quantity !== undefined) setClause += `quantity = ${quantity},`;
 
         const resQry = await db.execRaw(`
             UPDATE transfer_item

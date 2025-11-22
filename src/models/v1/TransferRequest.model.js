@@ -52,7 +52,7 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE TRANSFER REQUEST
  */
-exports.create = async (source_store_id, destination_store_id, requested_by, status) => {
+exports.create = async (source_id, destination_id, reference, note, device_id) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -78,10 +78,11 @@ exports.create = async (source_store_id, destination_store_id, requested_by, sta
         let columns = ['id'];
         let values = [`'${id}'`];
 
-        if (source_store_id) { columns.push('source_store_id'); values.push(`'${source_store_id}'`); }
-        if (destination_store_id) { columns.push('destination_store_id'); values.push(`'${destination_store_id}'`); }
-        if (requested_by) { columns.push('requested_by'); values.push(`'${requested_by}'`); }
-        if (status) { columns.push('status'); values.push(`'${status}'`); }
+        if (source_id) { columns.push('source_id'); values.push(`'${source_id}'`); }
+        if (destination_id) { columns.push('destination_id'); values.push(`'${destination_id}'`); }
+        if (reference) { columns.push('reference'); values.push(`'${reference}'`); }
+        if (note) { columns.push('note'); values.push(`'${note}'`); }
+        if (device_id) { columns.push('device_id'); values.push(`'${device_id}'`); }
 
         columns.push('created_at');
         values.push(`'${getDateNow()}'`);
@@ -131,7 +132,7 @@ exports.findById = async (id) => {
 /**
  * UPDATE TRANSFER REQUEST
  */
-exports.update = async (id, source_store_id, destination_store_id, requested_by, status) => {
+exports.update = async (id, source_id, destination_id, reference, note, device_id) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -142,10 +143,11 @@ exports.update = async (id, source_store_id, destination_store_id, requested_by,
             database: process.env.FE_DATABASE,
         });
         let setClause = '';
-        if (source_store_id) setClause += `source_store_id = '${source_store_id}',`;
-        if (destination_store_id) setClause += `destination_store_id = '${destination_store_id}',`;
-        if (requested_by) setClause += `requested_by = '${requested_by}',`;
-        if (status) setClause += `status = '${status}',`;
+        if (source_id) setClause += `source_id = '${source_id}',`;
+        if (destination_id) setClause += `destination_id = '${destination_id}',`;
+        if (reference) setClause += `reference = '${reference}',`;
+        if (note) setClause += `note = '${note}',`;
+        if (device_id) setClause += `device_id = '${device_id}',`;
 
         const resQry = await db.execRaw(`
             UPDATE transfer_request

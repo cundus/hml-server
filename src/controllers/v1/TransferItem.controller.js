@@ -8,9 +8,9 @@ const sendResponse = require("../../utils/Response");
  */
 exports.listTransferItem = async (req, res) => {
     try {
-        const { Page, RowsPerPage, transfer_request_id } = req.body;
+        const { Page, RowsPerPage, transfer_id } = req.body;
 
-        const resQry = await TransferItem.list({ Page, RowsPerPage, transfer_request_id });
+        const resQry = await TransferItem.list({ Page, RowsPerPage, transfer_id });
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry || resQry.length === 0) return sendResponse(req, res, "03");
@@ -30,9 +30,9 @@ exports.listTransferItem = async (req, res) => {
  */
 exports.createTransferItem = async (req, res) => {
     try {
-        const { transfer_request_id, product_id, qty, note } = req.body;
+        const { transfer_id, product_id, qty } = req.body;
 
-        const resQry = await TransferItem.create(transfer_request_id, product_id, qty, note);
+        const resQry = await TransferItem.create(transfer_id, product_id, qty);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry?.results || resQry.results.length === 0) return sendResponse(req, res, "03");
@@ -68,9 +68,9 @@ exports.getOneTransferItem = async (req, res) => {
 exports.updateTransferItem = async (req, res) => {
     try {
         const { id } = req.params;
-        const { transfer_request_id, product_id, qty, note } = req.body;
+        const { transfer_id, product_id, qty } = req.body;
 
-        const resQry = await TransferItem.update(id, transfer_request_id, product_id, qty, note);
+        const resQry = await TransferItem.update(id, transfer_id, product_id, qty);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
 
