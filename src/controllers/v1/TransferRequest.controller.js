@@ -30,9 +30,9 @@ exports.listTransferRequest = async (req, res) => {
  */
 exports.createTransferRequest = async (req, res) => {
     try {
-        const { product_id, store_from, store_to, qty, request_date, note } = req.body;
+        const { source_id, destination_id, reference, note, device_id } = req.body;
 
-        const resQry = await TransferRequest.create(product_id, store_from, store_to, qty, request_date, note);
+        const resQry = await TransferRequest.create(source_id, destination_id, reference, note, device_id);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry?.results || resQry.results.length === 0) return sendResponse(req, res, "03");
@@ -68,9 +68,9 @@ exports.getOneTransferRequest = async (req, res) => {
 exports.updateTransferRequest = async (req, res) => {
     try {
         const { id } = req.params;
-        const { product_id, store_from, store_to, qty, request_date, note, status } = req.body;
+        const { source_id, destination_id, reference, note, device_id } = req.body;
 
-        const resQry = await TransferRequest.update(id, product_id, store_from, store_to, qty, request_date, note, status);
+        const resQry = await TransferRequest.update(id, source_id, destination_id, reference, note, device_id);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
 
