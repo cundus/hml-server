@@ -52,7 +52,13 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE PURCHASE ORDER
  */
-exports.create = async (supplier_id, order_date, status, total_amount) => {
+exports.create = async (
+    code,
+    supplier_id,
+    store_id,
+    status,
+    total
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -65,14 +71,15 @@ exports.create = async (supplier_id, order_date, status, total_amount) => {
         const id = crypto.randomUUID();
 
         const columns = [
-            'id', 'supplier_id', 'order_date', 'status', 'total_amount', 'created_at', 'updated_at'
+            'id', 'supplier_id', 'code', 'status', 'store_id', 'total', 'created_at', 'updated_at'
         ];
         const values = [
             `'${id}'`,
             supplier_id ? `'${supplier_id}'` : 'NULL',
-            order_date ? `'${order_date}'` : 'NULL',
+            code ? `'${code}'` : 'NULL',
             status ? `'${status}'` : 'NULL',
-            total_amount !== undefined ? total_amount : 'NULL',
+            store_id ? `'${store_id}'` : 'NULL',
+            total ? `'${total}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -119,7 +126,14 @@ exports.findById = async (id) => {
 /**
  * UPDATE PURCHASE ORDER
  */
-exports.update = async (id, supplier_id, order_date, status, total_amount) => {
+exports.update = async (
+    id,
+    code,
+    supplier_id,
+    store_id,
+    status,
+    total
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -130,10 +144,11 @@ exports.update = async (id, supplier_id, order_date, status, total_amount) => {
             database: process.env.FE_DATABASE,
         });
         let setClause = '';
+        if (code) setClause += `code = '${code}',`;
         if (supplier_id) setClause += `supplier_id = '${supplier_id}',`;
-        if (order_date) setClause += `order_date = '${order_date}',`;
+        if (store_id) setClause += `store_id = '${store_id}',`;
         if (status) setClause += `status = '${status}',`;
-        if (total_amount !== undefined) setClause += `total_amount = ${total_amount},`;
+        if (total !== undefined) setClause += `total = ${total},`;
 
         const resQry = await db.execRaw(`
             UPDATE purchase_order

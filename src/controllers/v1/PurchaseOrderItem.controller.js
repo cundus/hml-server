@@ -31,19 +31,17 @@ exports.listPurchaseOrderItem = async (req, res) => {
 exports.createPurchaseOrderItem = async (req, res) => {
     try {
         const {
-            purchase_order_id,
+            po_id,
             product_id,
-            qty,
-            unit_price,
-            total_price,
+            quantity,
+            cost,
         } = req.body;
 
         const created = await PurchaseOrderItem.create(
-            purchase_order_id,
+            po_id,
             product_id,
-            qty,
-            unit_price,
-            total_price
+            quantity,
+            cost,
         );
 
         if (created?.hasOwnProperty("err")) throw new Error(created.err);
@@ -81,20 +79,18 @@ exports.updatePurchaseOrderItem = async (req, res) => {
     try {
         const { id } = req.params; // <-- pakai params
         const {
-            purchase_order_id,
+            po_id,
             product_id,
-            qty,
-            unit_price,
-            total_price,
+            quantity,
+            cost,
         } = req.body;
 
         const updated = await PurchaseOrderItem.update(
             id,
-            purchase_order_id,
+            po_id,
             product_id,
-            qty,
-            unit_price,
-            total_price
+            quantity,
+            cost,
         );
 
         if (updated?.hasOwnProperty("err")) throw new Error(updated.err);

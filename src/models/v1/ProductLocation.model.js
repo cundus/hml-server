@@ -52,7 +52,14 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE PRODUCT LOCATION
  */
-exports.create = async (product_id, location_code, quantity) => {
+exports.create = async (
+    product_id,
+    store_id,
+    location,
+    quantity,
+    reserved_quantity,
+    device_id
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -65,13 +72,16 @@ exports.create = async (product_id, location_code, quantity) => {
         const id = crypto.randomUUID();
 
         const columns = [
-            'id', 'product_id', 'location_code', 'quantity', 'created_at', 'updated_at'
+            'id', 'product_id', 'store_id', 'location', 'reserved_quantity', 'device_id', 'created_at', 'updated_at'
         ];
         const values = [
             `'${id}'`,
             product_id ? `'${product_id}'` : 'NULL',
-            location_code ? `'${location_code}'` : 'NULL',
-            quantity !== undefined ? quantity : 0,
+            store_id ? `'${store_id}'` : 'NULL',
+            store_id ? `'${store_id}'` : 'NULL',
+            location ? `'${location}'` : 'NULL',
+            reserved_quantity !== undefined ? reserved_quantity : 0,
+            device_id ? `'${device_id}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -118,7 +128,15 @@ exports.findById = async (id) => {
 /**
  * UPDATE PRODUCT LOCATION
  */
-exports.update = async (id, product_id, location_code, quantity) => {
+exports.update = async (
+    id,
+    product_id,
+    store_id,
+    location,
+    quantity,
+    reserved_quantity,
+    device_id,
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -130,8 +148,11 @@ exports.update = async (id, product_id, location_code, quantity) => {
         });
         let setClause = '';
         if (product_id) setClause += `product_id = '${product_id}',`;
-        if (location_code) setClause += `location_code = '${location_code}',`;
-        if (quantity !== undefined) setClause += `quantity = ${quantity},`;
+        if (store_id) setClause += `store_id = '${store_id}',`;
+        if (location) setClause += `location = '${location}',`;
+        if (quantity) setClause += `quantity = '${quantity}',`;
+        if (reserved_quantity) setClause += `reserved_quantity = '${reserved_quantity}',`;
+        if (device_id) setClause += `device_id = '${device_id}',`;
 
         const resQry = await db.execRaw(`
             UPDATE product_location

@@ -35,8 +35,8 @@ exports.listTransactionItems = async (req, res) => {
  * - transaction_id
  * - product_id
  * - qty
- * - price
- * - subtotal
+ * - customer_id
+ * - 
  */
 exports.createTransactionItem = async (req, res) => {
     try {
@@ -44,16 +44,16 @@ exports.createTransactionItem = async (req, res) => {
             transaction_id,
             product_id,
             qty,
-            price,
-            subtotal
+            customer_id,
+
         } = req.body;
 
         const resQry = await TransactionItems.create(
             transaction_id,
             product_id,
             qty,
-            price,
-            subtotal
+            customer_id,
+
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -104,8 +104,8 @@ exports.updateTransactionItem = async (req, res) => {
             transaction_id,
             product_id,
             qty,
-            price,
-            subtotal
+            customer_id,
+
         } = req.body;
 
         const resQry = await TransactionItems.update(
@@ -113,8 +113,8 @@ exports.updateTransactionItem = async (req, res) => {
             transaction_id,
             product_id,
             qty,
-            price,
-            subtotal
+            customer_id,
+
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

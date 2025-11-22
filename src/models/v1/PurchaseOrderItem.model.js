@@ -52,7 +52,12 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE PURCHASE ORDER ITEM
  */
-exports.create = async (purchase_order_id, product_id, qty, unit_price, total_price) => {
+exports.create = async (
+    po_id,
+    product_id,
+    quantity,
+    cost
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -65,17 +70,14 @@ exports.create = async (purchase_order_id, product_id, qty, unit_price, total_pr
         const id = crypto.randomUUID();
 
         const columns = [
-            'id', 'purchase_order_id', 'product_id', 'qty', 'unit_price', 'total_price', 'created_at', 'updated_at'
+            'id', 'po_id', 'product_id', 'quantity', 'cost'
         ];
         const values = [
             `'${id}'`,
-            purchase_order_id ? `'${purchase_order_id}'` : 'NULL',
+            po_id ? `'${po_id}'` : 'NULL',
             product_id ? `'${product_id}'` : 'NULL',
-            qty !== undefined ? qty : 'NULL',
-            unit_price !== undefined ? unit_price : 'NULL',
-            total_price !== undefined ? total_price : 'NULL',
-            `'${getDateNow()}'`,
-            `'${getDateNow()}'`
+            quantity !== undefined ? quantity : 'NULL',
+            cost !== undefined ? cost : 'NULL',
         ];
 
         const resQry = await db.execRaw(`
@@ -120,7 +122,13 @@ exports.findById = async (id) => {
 /**
  * UPDATE PURCHASE ORDER ITEM
  */
-exports.update = async (id, purchase_order_id, product_id, qty, unit_price, total_price) => {
+exports.update = async (
+    id,
+    po_id,
+    product_id,
+    quantity,
+    cost
+) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -131,11 +139,10 @@ exports.update = async (id, purchase_order_id, product_id, qty, unit_price, tota
             database: process.env.FE_DATABASE,
         });
         let setClause = '';
-        if (purchase_order_id) setClause += `purchase_order_id = '${purchase_order_id}',`;
+        if (po_id) setClause += `po_id = '${po_id}',`;
         if (product_id) setClause += `product_id = '${product_id}',`;
-        if (qty !== undefined) setClause += `qty = ${qty},`;
-        if (unit_price !== undefined) setClause += `unit_price = ${unit_price},`;
-        if (total_price !== undefined) setClause += `total_price = ${total_price},`;
+        if (quantity !== undefined) setClause += `quantity = ${quantity},`;
+        if (cost !== undefined) setClause += `cost = ${cost},`;
 
         const resQry = await db.execRaw(`
             UPDATE purchase_order_item

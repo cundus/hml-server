@@ -52,7 +52,10 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE BATCH
  */
-exports.create = async (batch_number, product_id, expiration_date) => {
+exports.create = async (
+    product_id,
+    code,
+    expiry_date) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -64,12 +67,12 @@ exports.create = async (batch_number, product_id, expiration_date) => {
         });
         const id = crypto.randomUUID();
 
-        const columns = ['id', 'batch_number', 'product_id', 'expiration_date', 'created_at', 'updated_at'];
+        const columns = ['id', 'product_id', 'code', 'expiry_date', 'created_at', 'updated_at'];
         const values = [
             `'${id}'`,
-            batch_number ? `'${batch_number}'` : 'NULL',
             product_id ? `'${product_id}'` : 'NULL',
-            expiration_date ? `'${expiration_date}'` : 'NULL',
+            code ? `'${code}'` : 'NULL',
+            expiry_date ? `'${expiry_date}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -116,7 +119,11 @@ exports.findById = async (id) => {
 /**
  * UPDATE BATCH
  */
-exports.update = async (id, batch_number, product_id, expiration_date) => {
+exports.update = async (
+    id,
+    product_id,
+    code,
+    expiry_date) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -127,9 +134,9 @@ exports.update = async (id, batch_number, product_id, expiration_date) => {
             database: process.env.FE_DATABASE,
         });
         let setClause = '';
-        if (batch_number) setClause += `batch_number = '${batch_number}',`;
         if (product_id) setClause += `product_id = '${product_id}',`;
-        if (expiration_date) setClause += `expiration_date = '${expiration_date}',`;
+        if (code) setClause += `code = '${code}',`;
+        if (expiry_date) setClause += `expiry_date = '${expiry_date}',`;
 
         const resQry = await db.execRaw(`
             UPDATE batch

@@ -52,7 +52,7 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE STOCK ADJUSTMENT
  */
-exports.create = async (product_id, initial_qty, adjusted_qty, reason, created_by) => {
+exports.create = async (product_id, store_id, difference, note, performed_by, device_id) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -65,15 +65,16 @@ exports.create = async (product_id, initial_qty, adjusted_qty, reason, created_b
         const id = crypto.randomUUID();
 
         const columns = [
-            'id', 'product_id', 'initial_qty', 'adjusted_qty', 'reason', 'created_by', 'created_at', 'updated_at'
+            'id', 'product_id', 'store_id', 'difference', 'note', 'performed_by', 'device_id', 'created_at', 'updated_at'
         ];
         const values = [
             `'${id}'`,
             product_id ? `'${product_id}'` : 'NULL',
-            initial_qty !== undefined ? initial_qty : 'NULL',
-            adjusted_qty !== undefined ? adjusted_qty : 'NULL',
-            reason ? `'${reason}'` : 'NULL',
-            created_by ? `'${created_by}'` : 'NULL',
+            store_id !== undefined ? store_id : 'NULL',
+            difference !== undefined ? difference : 'NULL',
+            note ? `'${note}'` : 'NULL',
+            performed_by ? `'${performed_by}'` : 'NULL',
+            device_id ? `'${device_id}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -120,7 +121,7 @@ exports.findById = async (id) => {
 /**
  * UPDATE STOCK ADJUSTMENT
  */
-exports.update = async (id, product_id, initial_qty, adjusted_qty, reason) => {
+exports.update = async (id, product_id, store_id, difference, note, performed_by, device_id) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -132,9 +133,11 @@ exports.update = async (id, product_id, initial_qty, adjusted_qty, reason) => {
         });
         let setClause = '';
         if (product_id) setClause += `product_id = '${product_id}',`;
-        if (initial_qty !== undefined) setClause += `initial_qty = ${initial_qty},`;
-        if (adjusted_qty !== undefined) setClause += `adjusted_qty = ${adjusted_qty},`;
-        if (reason) setClause += `reason = '${reason}',`;
+        if (store_id !== undefined) setClause += `store_id = ${store_id},`;
+        if (difference !== undefined) setClause += `difference = ${difference},`;
+        if (note) setClause += `note = '${note}',`;
+        if (performed_by) setClause += `performed_by = '${performed_by}',`;
+        if (device_id) setClause += `device_id = '${device_id}',`;
 
         const resQry = await db.execRaw(`
             UPDATE stock_adjustment

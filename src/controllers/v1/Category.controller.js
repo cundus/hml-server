@@ -34,11 +34,10 @@ exports.listCategory = async (req, res) => {
  */
 exports.createCategory = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name } = req.body;
 
         const resQry = await Category.create(
-            name,
-            description
+            name
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -85,12 +84,11 @@ exports.getOneCategory = async (req, res) => {
 exports.updateCategory = async (req, res) => {
     try {
         const { id } = req.params; // <- menggunakan req.params
-        const { name, description } = req.body;
+        const { name } = req.body;
 
         const resQry = await Category.update(
             id,
-            name,
-            description
+            name
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

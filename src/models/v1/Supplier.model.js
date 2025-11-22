@@ -52,7 +52,7 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE SUPPLIER
  */
-exports.create = async (name, phone, email, address, contact_person) => {
+exports.create = async (name, phone, address) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -77,9 +77,7 @@ exports.create = async (name, phone, email, address, contact_person) => {
 
         if (name) { columns.push('name'); values.push(`'${name}'`); }
         if (phone) { columns.push('phone'); values.push(`'${phone}'`); }
-        if (email) { columns.push('email'); values.push(`'${email}'`); }
         if (address) { columns.push('address'); values.push(`'${address}'`); }
-        if (contact_person) { columns.push('contact_person'); values.push(`'${contact_person}'`); }
 
         columns.push('created_at');
         values.push(`'${getDateNow()}'`);
@@ -129,7 +127,7 @@ exports.findById = async (id) => {
 /**
  * UPDATE SUPPLIER
  */
-exports.update = async (id, name, phone, email, address, contact_person) => {
+exports.update = async (id, name, phone, address) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -142,9 +140,7 @@ exports.update = async (id, name, phone, email, address, contact_person) => {
         let setClause = '';
         if (name) setClause += `name = '${name}',`;
         if (phone) setClause += `phone = '${phone}',`;
-        if (email) setClause += `email = '${email}',`;
         if (address) setClause += `address = '${address}',`;
-        if (contact_person) setClause += `contact_person = '${contact_person}',`;
 
         const resQry = await db.execRaw(`
             UPDATE supplier

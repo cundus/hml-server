@@ -36,17 +36,19 @@ exports.createProductLocation = async (req, res) => {
         const {
             product_id,
             store_id,
-            shelf,
-            row,
-            bin,
+            location,
+            quantity,
+            reserved_quantity,
+            device_id,
         } = req.body;
 
         const resQry = await ProductLocation.create(
             product_id,
             store_id,
-            shelf,
-            row,
-            bin
+            location,
+            quantity,
+            reserved_quantity,
+            device_id
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -94,18 +96,20 @@ exports.updateProductLocation = async (req, res) => {
         const {
             product_id,
             store_id,
-            shelf,
-            row,
-            bin
+            location,
+            quantity,
+            reserved_quantity,
+            device_id,
         } = req.body;
 
         const resQry = await ProductLocation.update(
             id,
             product_id,
             store_id,
-            shelf,
-            row,
-            bin
+            location,
+            quantity,
+            reserved_quantity,
+            device_id,
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

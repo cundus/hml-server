@@ -30,14 +30,10 @@ exports.listStockAdjustment = async (req, res) => {
  */
 exports.createStockAdjustment = async (req, res) => {
     try {
-        const { product_id, initial_qty, adjusted_qty, reason, created_by } = req.body;
+        const { product_id, store_id, difference, note, performed_by, device_id } = req.body;
 
         const created = await StockAdjustment.create(
-            product_id,
-            initial_qty,
-            adjusted_qty,
-            reason,
-            created_by
+            product_id, store_id, difference, note, performed_by, device_id
         );
 
         if (created?.hasOwnProperty("err")) throw new Error(created.err);
@@ -74,15 +70,9 @@ exports.getOneStockAdjustment = async (req, res) => {
 exports.updateStockAdjustment = async (req, res) => {
     try {
         const { id } = req.params; // pakai params
-        const { product_id, initial_qty, adjusted_qty, reason } = req.body;
+        const { product_id, store_id, difference, note, performed_by, device_id } = req.body;
 
-        const updated = await StockAdjustment.update(
-            id,
-            product_id,
-            initial_qty,
-            adjusted_qty,
-            reason
-        );
+        const updated = await StockAdjustment.update(id, product_id, store_id, difference, note, performed_by, device_id);
 
         if (updated?.hasOwnProperty("err")) throw new Error(updated.err);
 

@@ -30,25 +30,42 @@ exports.listTransactions = async (req, res) => {
  */
 exports.createTransaction = async (req, res) => {
     try {
-        const { store_id, transaction_type, amount, description, reference_id } = req.body;
+        const {
+            code,
+            store_id,
+            subtotal,
+            discount,
+            tax,
+            total,
+            customer_id,
+            user_id,
+            device_id
+        } = req.body;
 
         const resQry = await Transactions.create(
+            code,
             store_id,
-            transaction_type,
-            amount,
-            description,
-            reference_id
+            subtotal,
+            discount,
+            tax,
+            total,
+            customer_id,
+            user_id,
+            device_id
         );
 
-        if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
-        if (!resQry || resQry?.results?.length === 0) return sendResponse(req, res, "03");
+        if (resQry?.err) throw new Error(resQry.err);
+        if (!resQry || resQry?.results?.length === 0)
+            return sendResponse(req, res, "03");
 
         return sendResponse(req, res, "00", { detaildata: resQry });
+
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
+
 
 /**
  * GET ONE TRANSACTION
@@ -74,25 +91,42 @@ exports.getOneTransaction = async (req, res) => {
 exports.updateTransaction = async (req, res) => {
     try {
         const { id } = req.params;
-        const { store_id, transaction_type, amount, description, reference_id } = req.body;
+
+        const {
+            code,
+            store_id,
+            subtotal,
+            discount,
+            tax,
+            total,
+            customer_id,
+            user_id,
+            device_id
+        } = req.body;
 
         const resQry = await Transactions.update(
             id,
+            code,
             store_id,
-            transaction_type,
-            amount,
-            description,
-            reference_id
+            subtotal,
+            discount,
+            tax,
+            total,
+            customer_id,
+            user_id,
+            device_id
         );
 
-        if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
+        if (resQry?.err) throw new Error(resQry.err);
 
         return sendResponse(req, res, "00", { detaildata: resQry });
+
     } catch (err) {
         console.error(err);
         return sendResponse(req, res, "99");
     }
 };
+
 
 /**
  * DELETE TRANSACTION

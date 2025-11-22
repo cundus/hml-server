@@ -52,7 +52,10 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE CUSTOMER
  */
-exports.create = async (name, phone, email, address, customer_category_id) => {
+exports.create = async (
+    name,
+    phone,
+    categoryId) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -64,14 +67,12 @@ exports.create = async (name, phone, email, address, customer_category_id) => {
         });
         const id = crypto.randomUUID();
 
-        const columns = ['id', 'name', 'phone', 'email', 'address', 'customer_category_id', 'created_at', 'updated_at'];
+        const columns = ['id', 'name', 'phone', 'categoryId', 'created_at', 'updated_at'];
         const values = [
             `'${id}'`,
             name ? `'${name}'` : 'NULL',
             phone ? `'${phone}'` : 'NULL',
-            email ? `'${email}'` : 'NULL',
-            address ? `'${address}'` : 'NULL',
-            customer_category_id ? `'${customer_category_id}'` : 'NULL',
+            categoryId ? `'${categoryId}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -118,7 +119,11 @@ exports.findById = async (id) => {
 /**
  * UPDATE CUSTOMER
  */
-exports.update = async (id, name, phone, email, address, customer_category_id) => {
+exports.update = async (
+    id,
+    name,
+    phone,
+    categoryId) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -131,9 +136,7 @@ exports.update = async (id, name, phone, email, address, customer_category_id) =
         let setClause = '';
         if (name) setClause += `name = '${name}',`;
         if (phone) setClause += `phone = '${phone}',`;
-        if (email) setClause += `email = '${email}',`;
-        if (address) setClause += `address = '${address}',`;
-        if (customer_category_id) setClause += `customer_category_id = '${customer_category_id}',`;
+        if (categoryId) setClause += `categoryId = '${categoryId}',`;
 
         const resQry = await db.execRaw(`
             UPDATE customer

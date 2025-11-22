@@ -36,18 +36,14 @@ exports.createBatch = async (req, res) => {
     try {
         const {
             product_id,
-            batch_code,
+            code,
             expiry_date,
-            manufacture_date,
-            notes
         } = req.body;
 
         const resQry = await Batch.create(
             product_id,
-            batch_code,
+            code,
             expiry_date,
-            manufacture_date,
-            notes
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -96,19 +92,15 @@ exports.updateBatch = async (req, res) => {
         const { id } = req.params; // <- menggunakan req.params
         const {
             product_id,
-            batch_code,
-            expiry_date,
-            manufacture_date,
-            notes
+            code,
+            expiry_date
         } = req.body;
 
         const resQry = await Batch.update(
             id,
             product_id,
-            batch_code,
-            expiry_date,
-            manufacture_date,
-            notes
+            code,
+            expiry_date
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

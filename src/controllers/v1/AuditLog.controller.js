@@ -37,19 +37,13 @@ exports.createAuditLog = async (req, res) => {
         const {
             user_id,
             action,
-            module,
-            old_value,
-            new_value,
-            description,
+            device_id,
         } = req.body;
 
         const resQry = await AuditLog.create(
             user_id,
             action,
-            module,
-            old_value,
-            new_value,
-            description
+            device_id,
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -99,20 +93,14 @@ exports.updateAuditLog = async (req, res) => {
         const {
             user_id,
             action,
-            module,
-            old_value,
-            new_value,
-            description,
+            device_id,
         } = req.body;
 
         const resQry = await AuditLog.update(
             id,
             user_id,
             action,
-            module,
-            old_value,
-            new_value,
-            description
+            device_id,
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

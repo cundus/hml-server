@@ -29,14 +29,17 @@ exports.listProduct = async (req, res) => {
  */
 exports.createProduct = async (req, res) => {
     try {
-        const { product_id, store_id, price, start_date, end_date } = req.body;
+        const { sku, name, price, description, unit, cost, isActive, category_id } = req.body;
 
         const resQry = await Product.create(
-            product_id,
-            store_id,
+            sku,
+            name,
             price,
-            start_date,
-            end_date
+            description,
+            unit,
+            cost,
+            isActive,
+            category_id
         );
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry?.results || resQry.results.length === 0) return sendResponse(req, res, "03");
@@ -71,15 +74,18 @@ exports.getOneProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const { product_id, store_id, price, start_date, end_date } = req.body;
+        const { sku, name, price, description, unit, cost, isActive, category_id } = req.body;
 
         const resQry = await Product.update(
             id,
-            product_id,
-            store_id,
+            sku,
+            name,
             price,
-            start_date,
-            end_date
+            description,
+            unit,
+            cost,
+            isActive,
+            category_id
         );
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
 

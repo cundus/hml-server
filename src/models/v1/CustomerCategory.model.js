@@ -52,7 +52,7 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE CUSTOMER CATEGORY
  */
-exports.create = async (name, description) => {
+exports.create = async (name) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -64,11 +64,10 @@ exports.create = async (name, description) => {
         });
         const id = crypto.randomUUID();
 
-        const columns = ['id', 'name', 'description', 'created_at', 'updated_at'];
+        const columns = ['id', 'name', 'created_at', 'updated_at'];
         const values = [
             `'${id}'`,
             name ? `'${name}'` : 'NULL',
-            description ? `'${description}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -115,7 +114,7 @@ exports.findById = async (id) => {
 /**
  * UPDATE CUSTOMER CATEGORY
  */
-exports.update = async (id, name, description) => {
+exports.update = async (id, name) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -127,7 +126,6 @@ exports.update = async (id, name, description) => {
         });
         let setClause = '';
         if (name) setClause += `name = '${name}',`;
-        if (description) setClause += `description = '${description}',`;
 
         const resQry = await db.execRaw(`
             UPDATE customer_category

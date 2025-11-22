@@ -52,7 +52,10 @@ exports.list = async (Page, RowsPerPage) => {
 /**
  * CREATE AUDIT LOG
  */
-exports.create = async (action, entity, entity_id, description, user_id) => {
+exports.create = async (
+    user_id,
+    action,
+    device_id,) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -64,14 +67,12 @@ exports.create = async (action, entity, entity_id, description, user_id) => {
         });
         const id = crypto.randomUUID();
 
-        const columns = ['id', 'action', 'entity', 'entity_id', 'description', 'user_id', 'created_at', 'updated_at'];
+        const columns = ['id', 'user_id', 'action', 'device_id', 'created_at', 'updated_at'];
         const values = [
             `'${id}'`,
-            action ? `'${action}'` : 'NULL',
-            entity ? `'${entity}'` : 'NULL',
-            entity_id ? `'${entity_id}'` : 'NULL',
-            description ? `'${description}'` : 'NULL',
             user_id ? `'${user_id}'` : 'NULL',
+            action ? `'${action}'` : 'NULL',
+            device_id ? `'${entity_id}'` : 'NULL',
             `'${getDateNow()}'`,
             `'${getDateNow()}'`
         ];
@@ -118,7 +119,11 @@ exports.findById = async (id) => {
 /**
  * UPDATE AUDIT LOG
  */
-exports.update = async (id, action, entity, entity_id, description, user_id) => {
+exports.update = async (
+    id,
+    user_id,
+    action,
+    device_id,) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -128,12 +133,11 @@ exports.update = async (id, action, entity, entity_id, description, user_id) => 
             password: config.db.password,
             database: process.env.FE_DATABASE,
         });
+
         let setClause = '';
-        if (action) setClause += `action = '${action}',`;
-        if (entity) setClause += `entity = '${entity}',`;
-        if (entity_id) setClause += `entity_id = '${entity_id}',`;
-        if (description) setClause += `description = '${description}',`;
         if (user_id) setClause += `user_id = '${user_id}',`;
+        if (action) setClause += `action = '${action}',`;
+        if (device_id) setClause += `device_id = '${device_id}',`;
 
         const resQry = await db.execRaw(`
             UPDATE audit_log

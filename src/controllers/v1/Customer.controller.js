@@ -37,17 +37,13 @@ exports.createCustomer = async (req, res) => {
         const {
             name,
             phone,
-            email,
-            address,
-            customer_category_id,
+            category_id,
         } = req.body;
 
         const resQry = await Customer.create(
             name,
             phone,
-            email,
-            address,
-            customer_category_id
+            category_id,
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -97,18 +93,14 @@ exports.updateCustomer = async (req, res) => {
         const {
             name,
             phone,
-            email,
-            address,
-            customer_category_id,
+            category_id
         } = req.body;
 
         const resQry = await Customer.update(
             id,
             name,
             phone,
-            email,
-            address,
-            customer_category_id
+            category_id
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

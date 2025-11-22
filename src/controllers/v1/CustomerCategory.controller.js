@@ -35,12 +35,10 @@ exports.createCustomerCategory = async (req, res) => {
     try {
         const {
             name,
-            description,
         } = req.body;
 
         const resQry = await CustomerCategory.create(
             name,
-            description
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -87,13 +85,11 @@ exports.updateCustomerCategory = async (req, res) => {
         const { id } = req.params; // <-- pakai params
         const {
             name,
-            description,
         } = req.body;
 
         const resQry = await CustomerCategory.update(
             id,
             name,
-            description
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

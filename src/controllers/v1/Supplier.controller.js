@@ -30,9 +30,9 @@ exports.listSupplier = async (req, res) => {
  */
 exports.createSupplier = async (req, res) => {
     try {
-        const { name, phone, address, email } = req.body;
+        const { name, phone, address } = req.body;
 
-        const resQry = await Supplier.create(name, phone, address, email);
+        const resQry = await Supplier.create(name, phone, address);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
         if (!resQry || resQry?.results?.length === 0) return sendResponse(req, res, "03");
@@ -68,9 +68,9 @@ exports.getOneSupplier = async (req, res) => {
 exports.updateSupplier = async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, phone, address, email } = req.body;
+        const { name, phone, address } = req.body;
 
-        const resQry = await Supplier.update(id, name, phone, address, email);
+        const resQry = await Supplier.update(id, name, phone, address);
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
 

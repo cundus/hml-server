@@ -34,19 +34,19 @@ exports.listPurchaseOrder = async (req, res) => {
 exports.createPurchaseOrder = async (req, res) => {
     try {
         const {
+            code,
             supplier_id,
             store_id,
-            order_date,
             status,
-            total_amount,
+            total
         } = req.body;
 
         const resQry = await PurchaseOrder.create(
+            code,
             supplier_id,
             store_id,
-            order_date,
             status,
-            total_amount
+            total
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);
@@ -92,20 +92,20 @@ exports.updatePurchaseOrder = async (req, res) => {
     try {
         const { id } = req.params; // <-- pakai params
         const {
+            code,
             supplier_id,
             store_id,
-            order_date,
             status,
-            total_amount
+            total
         } = req.body;
 
         const resQry = await PurchaseOrder.update(
             id,
+            code,
             supplier_id,
             store_id,
-            order_date,
             status,
-            total_amount
+            total
         );
 
         if (resQry?.hasOwnProperty("err")) throw new Error(resQry.err);

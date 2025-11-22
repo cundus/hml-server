@@ -49,7 +49,7 @@ exports.list = async (Page, RowsPerPage) => {
     }
 };
 
-exports.create = async (sku, name, description, unit, cost, category_id) => {
+exports.create = async (sku, name, price, description, unit, cost, isActive, category_id) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -75,9 +75,11 @@ exports.create = async (sku, name, description, unit, cost, category_id) => {
 
         if (sku) { columns.push("sku"); values.push(`'${sku}'`); }
         if (name) { columns.push("name"); values.push(`'${name}'`); }
+        if (price) { columns.push("price"); values.push(`'${price}'`); }
         if (description) { columns.push("description"); values.push(`'${description}'`); }
         if (unit) { columns.push("unit"); values.push(`'${unit}'`); }
         if (cost !== undefined) { columns.push("cost"); values.push(`${cost}`); }
+        if (isActive) { columns.push("isActive"); values.push(`'${isActive}'`); }
         if (category_id) { columns.push("category_id"); values.push(`'${category_id}'`); }
 
         columns.push("createdAt");
@@ -131,7 +133,7 @@ exports.findById = async (id) => {
  */
 
 
-exports.update = async (id, sku, name, description, unit, cost, category_id) => {
+exports.update = async (id, sku, name, price, description, unit, cost, isActive, categoryId) => {
     try {
         let db = new DatabaseHandler({
             host: config.db.host,
@@ -145,10 +147,12 @@ exports.update = async (id, sku, name, description, unit, cost, category_id) => 
 
         if (sku) { sets.push(`sku = '${sku}'`); }
         if (name) { sets.push(`name = '${name}'`); }
+        if (price) { sets.push(`price = '${price}'`); }
         if (description) { sets.push(`description = '${description}'`); }
         if (unit) { sets.push(`unit = '${unit}'`); }
         if (cost !== undefined) { sets.push(`cost = ${cost}`); }
-        if (category_id) { sets.push(`category_id = '${category_id}'`); }
+        if (isActive) { sets.push(`isActive = '${isActive}'`); }
+        if (categoryId) { sets.push(`categoryId = '${categoryId}'`); }
 
         sets.push("updatedAt = GETDATE()");
 

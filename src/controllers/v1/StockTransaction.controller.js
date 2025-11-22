@@ -1,6 +1,6 @@
 "use strict";
 
-const StockTransaction = require("../../models/StockTransaction.model");
+const StockTransaction = require("../../models/v1/StockTransaction.model");
 const sendResponse = require("../../utils/Response");
 
 /**
@@ -30,14 +30,30 @@ exports.listStockTransaction = async (req, res) => {
  */
 exports.createStockTransaction = async (req, res) => {
     try {
-        const { product_id, qty, type, description, created_by } = req.body;
+        const {
+            product_id,
+            store_id,
+            type,
+            quantity,
+            reference,
+            batch_id,
+            supplier_id,
+            customer_id,
+            performed_by,
+            device_id
+        } = req.body;
 
         const created = await StockTransaction.create(
             product_id,
-            qty,
+            store_id,
             type,
-            description,
-            created_by
+            quantity,
+            reference,
+            batch_id,
+            supplier_id,
+            customer_id,
+            performed_by,
+            device_id
         );
 
         if (created?.hasOwnProperty("err")) throw new Error(created.err);
@@ -74,14 +90,31 @@ exports.getOneStockTransaction = async (req, res) => {
 exports.updateStockTransaction = async (req, res) => {
     try {
         const { id } = req.params; // pakai params
-        const { product_id, qty, type, description } = req.body;
+        const {
+            product_id,
+            store_id,
+            type,
+            quantity,
+            reference,
+            batch_id,
+            supplier_id,
+            customer_id,
+            performed_by,
+            device_id
+        } = req.body;
 
         const updated = await StockTransaction.update(
             id,
             product_id,
-            qty,
+            store_id,
             type,
-            description
+            quantity,
+            reference,
+            batch_id,
+            supplier_id,
+            customer_id,
+            performed_by,
+            device_id
         );
 
         if (updated?.hasOwnProperty("err")) throw new Error(updated.err);
